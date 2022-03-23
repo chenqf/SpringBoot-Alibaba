@@ -1,0 +1,102 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: foundation-service # 在Spring Cloud应用中会被注册为服务名
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848  # nacos 服务端地址
+      discovery:
+        username: nacos
+        password: nacos
+        namespace: fb09fef9-cafa-4d84-9961-544572027110 # dev环境
+        ip: 127.0.0.1 # 客户端ip
+        port: 8081 # 客户端port
+        service: foundation-service # 客户端名称 ${spring.application.name}
+        # 本地开发不使用 nacos
+        register-enabled: false
+        enabled: false
+  devtools: # 配置热部署响应端口, 同时启动多应用, 端口一致会报错
+    livereload:
+      port: 35731
+  datasource:
+    druid:
+      master:
+        username: ENC(lEXIezEAWvvzLgtHjbmCY0AqlcjXPy1Nx6Y0jP/b6z5LIRGpALcbyQg/U3hhcPjw)
+        password: ENC(EdCxRFjsEcfGrIrzbJQgHiob64tS7TDkQgzoRXrVQpSg9T0ZOdr6fZXWu1qYrc/Z)
+        jdbc-url: jdbc:mysql://39.106.44.72:81/foundation_master?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=false
+        driver-class-name: com.mysql.cj.jdbc.Driver
+      slave:
+        username: ENC(lEXIezEAWvvzLgtHjbmCY0AqlcjXPy1Nx6Y0jP/b6z5LIRGpALcbyQg/U3hhcPjw)
+        password: ENC(EdCxRFjsEcfGrIrzbJQgHiob64tS7TDkQgzoRXrVQpSg9T0ZOdr6fZXWu1qYrc/Z)
+        jdbc-url: jdbc:mysql://39.106.44.72:81/foundation_slave?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=false
+        driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://39.106.44.72:81/foundation?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=false
+      username: ENC(RuEREKbW97xNPBOWEQOM/Fav/ttSR99zkf6mWNqXqGiSE6mYD1ayO+UBgS6us2uJ)
+      password: ENC(3CYnqeXXT89Q9fDJHlq962k/V0ZeM5pCdvCIdgvsGB3wbi+iBpWp9lIrVollstop)
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      initial-size: 10
+      max-active: 20
+      max-wait: 60000
+      min-idle: 1
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      test-while-idle: true
+      test-on-borrow: true
+      test-on-return: false
+      pool-prepared-statements: true
+      max-open-prepared-statements: 20
+      validation-query: SELECT 1
+      validation-query-timeout: 500
+      filters: stat
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        reset-enable: true
+        login-username: admin
+        login-password: admin
+  redis:
+    #    lettuce:
+    #      pool:
+    #        max-active: 100 # 最大连接数
+    #        max-wait: 2000 # 最长等待时间 ms
+    #        max-idle: 100 # 最大空闲连接数
+    #        min-idle: 10 # 最小空闲连接数
+    password: ENC(EdCxRFjsEcfGrIrzbJQgHiob64tS7TDkQgzoRXrVQpSg9T0ZOdr6fZXWu1qYrc/Z)
+    port: 6379
+    host: 39.106.44.72
+    database: 0
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.maple.foundation.entity # entity的位置
+  configuration:
+    map-underscore-to-camel-case: true # 驼峰映射到下划线
+    lazy-loading-enabled: true # 开启延时加载(用于分步查询,只有用到再查询)
+    aggressive-lazy-loading: false # 为true时,任何查询都会加载对象所有属性, 相当于不开始延时加载
+
+logging:
+  level:
+    root: info # 所有包，日志级别为 info
+    com.maple.foundation .mapper: debug # mybatis 日志为 debug 可输出sql
+
+pagehelper:
+  page-size-zero: true # pageSize=0 查出全部数据
+  reasonable: true # 如果 pageNum <= 0 会查询第一页，如果 pageNum > pages 会查询最后一页
+
+# 加密: mvn jasypt:encrypt-value -Djasypt.encryptor.password="${jasypt.encryptor.password}" -Djasypt.plugin.value="明文"
+# 解密: mvn jasypt:decrypt-value -Djasypt.encryptor.password="${jasypt.encryptor.password}" -Djasypt.plugin.value="ENC(密文)"
+jasypt:
+  encryptor:
+    password: qifeng.b.chen
+
+# 打开 actuator 监控 生产环境要考虑哪些打开哪些关闭
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,mappings
+  endpoint:
+    health:
+      show-details: always
+
